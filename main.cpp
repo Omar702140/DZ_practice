@@ -2,6 +2,8 @@
 
 template <class T>
 T* merge(const T* a, size_t sa, const T* b, size_t sb, T* c) {
+    // Попытка компенсировать слабость явного интерфейса рантайм-проверками.
+    // Но эти проверки НЕ могут гарантировать, что a действительно указывает на sa элементов.
     if (!c) {
       throw std::invalid_argument("merge: output buffer c is null");
     }
@@ -11,6 +13,8 @@ T* merge(const T* a, size_t sa, const T* b, size_t sb, T* c) {
     if (!b && sb != 0) {
       throw std::invalid_argument("merge: b is null but sb != 0");
     }
+    // Типы не выражают требование "a и b отсортированы".
+    // Это скрытое предусловие алгоритма.
     size_t i = 0, j = 0, k = 0;
     while (i < sa && j < sb) {
         if (a[i] <= b[j]) { //operator<=(const T&, const T&)
@@ -25,6 +29,8 @@ T* merge(const T* a, size_t sa, const T* b, size_t sb, T* c) {
     while (j < sb) {
       c[k++] = b[j++];
     }
+    // Функция возвращает T* (тот же c), что часто не добавляет безопасности, 
+    // а создаёт ещё одну возможность неверно использовать возвращаемое значение.
     return c;
 }
 
@@ -34,6 +40,7 @@ int main() {
   const size_t sa = sizeof(a) / sizeof(a[0]);
   const size_t sb = sizeof(b) / sizeof(b[0]);
   int c[sa + sb];
+  //ничего в вызове не мешает случайно написать merge(b, sa, a, sb, c)
   merge(a, sa, b, sb, c);
   for (std::size_t i = 0; i < sa + sb; ++i) {
     std::cout << c[i];
