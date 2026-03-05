@@ -13,8 +13,8 @@ T* merge(const T* a, size_t sa, const T* b, size_t sb, T* c) {
     }
     size_t i = 0, j = 0, k = 0;
     while (i < sa && j < sb) {
-        if (a[i] <= b[j]) {
-          c[k++] = a[i++];
+        if (a[i] <= b[j]) { //operator<=(const T&, const T&)
+          c[k++] = a[i++]; //T::operator=(const T&)
         } else {
           c[k++] = b[j++];
         }
